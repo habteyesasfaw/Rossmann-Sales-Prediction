@@ -17,8 +17,7 @@ This project aims to forecast sales for Rossmann Pharmaceuticals stores across v
 - [License](#license)
 
 ## Project Structure
-```
-.
+
 ├── data/                  # Contains training and test data files
 ├── scripts/               # Contains Python scripts for EDA and modeling
 │   └── eda_plots.py      # EDA functions
@@ -29,7 +28,7 @@ This project aims to forecast sales for Rossmann Pharmaceuticals stores across v
 │       └── ci.yml        # CI configuration
 ├── requirements.txt       # Project dependencies
 └── README.md              # Project documentation
-```
+
 
 ## Data
 The data used in this project is sourced from the [Rossmann Store Sales](https://www.kaggle.com/c/rossmann-store-sales) competition on Kaggle.
