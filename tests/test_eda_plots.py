@@ -19,9 +19,6 @@ class TestEDAFunctions(unittest.TestCase):
             'Date': pd.to_datetime(['2023-09-01 09:00:00', '2023-09-01 10:00:00', '2023-09-01 11:00:00', '2023-09-01 12:00:00', '2023-09-01 13:00:00'])
         })
 
-
-   
-
     def test_assortment_type_sales(self):
         """Test the effect of assortment type on sales."""
         # Check if the 'Assortment' and 'Sales' columns are in the dataframe
