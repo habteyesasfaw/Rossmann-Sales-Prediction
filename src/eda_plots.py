@@ -116,15 +116,32 @@ def sales_customers_correlation(df):
 # Function to check effect of promotions on sales and customers
 def promo_effect_on_sales(df):
     logger.info("Analyzing the effect of promos on sales and customers.")
+    
+    # Sales box plot
     plt.figure(figsize=(10, 6))
     sns.boxplot(x='Promo', y='Sales', data=df)
     plt.title('Sales with vs. without Promotions')
     plt.show()
 
+    # Customers box plot
     plt.figure(figsize=(10, 6))
     sns.boxplot(x='Promo', y='Customers', data=df)
     plt.title('Number of Customers with vs. without Promotions')
     plt.show()
+    
+    # Calculate average sales per store for promo and non-promo days
+    promo_sales = df[df['Promo'] == 1].groupby('Store')['Sales'].mean().reset_index()
+    non_promo_sales = df[df['Promo'] == 0].groupby('Store')['Sales'].mean().reset_index()
+    
+    # Merge data for comparison
+    sales_comparison = pd.merge(promo_sales, non_promo_sales, on='Store', suffixes=('_Promo', '_NonPromo'))
+    sales_comparison['Sales_Increase'] = sales_comparison['Sales_Promo'] - sales_comparison['Sales_NonPromo']
+
+    # Sort stores by sales increase
+    top_promos = sales_comparison.sort_values(by='Sales_Increase', ascending=False)
+    
+    logger.info("Top promo effectiveness calculated.")
+    return top_promos
 
 # Function to analyze promo effectiveness by store
 def promo_effectiveness_by_store(df):
@@ -159,11 +176,35 @@ def customer_behavior_opening_closing(df):
     plt.show()
 
 # Function to analyze sales on weekends vs weekdays
+# def sales_weekend_vs_weekday(df):
+#     logger.info("Comparing sales on weekdays vs weekends.")
+#     weekend_sales = df[df['DayOfWeek'].isin([6, 7])]['Sales'].mean()
+#     weekday_sales = df[df['DayOfWeek'].isin([1, 2, 3, 4, 5])]['Sales'].mean()
+#     print(f"Weekend Sales: {weekend_sales}, Weekday Sales: {weekday_sales}")
 def sales_weekend_vs_weekday(df):
     logger.info("Comparing sales on weekdays vs weekends.")
+    
+    # Calculate average sales for weekends and weekdays
     weekend_sales = df[df['DayOfWeek'].isin([6, 7])]['Sales'].mean()
     weekday_sales = df[df['DayOfWeek'].isin([1, 2, 3, 4, 5])]['Sales'].mean()
-    print(f"Weekend Sales: {weekend_sales}, Weekday Sales: {weekday_sales}")
+    
+    # Print the results
+    print(f"Weekend Sales: {weekend_sales:.2f}, Weekday Sales: {weekday_sales:.2f}")
+
+    # Prepare data for plotting
+    sales_data = pd.DataFrame({
+        'Type': ['Weekend', 'Weekday'],
+        'Sales': [weekend_sales, weekday_sales]
+    })
+
+    # Create a bar chart
+    plt.figure(figsize=(8, 5))
+    sns.barplot(x='Type', y='Sales', data=sales_data, palette='viridis')
+    plt.title('Average Sales: Weekend vs Weekday')
+    plt.ylabel('Average Sales')
+    plt.xlabel('Day Type')
+    plt.ylim(0, sales_data['Sales'].max() * 1.1)  # Add some space above the highest bar
+    plt.show()
 
 # Function to analyze the effect of assortment types on sales
 def assortment_type_sales(df):
