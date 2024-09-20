@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - main
+      - task-1
   pull_request:
     branches:
       - main
@@ -29,4 +29,4 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest tests/
+          pytest tests/ --disable-warnings -v
