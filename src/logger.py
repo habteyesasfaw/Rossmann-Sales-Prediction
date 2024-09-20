@@ -1,17 +1,14 @@
 import logging
-import os
 
-def get_logger(name, log_file='app.log', level=logging.INFO):
-    log_dir = "logs"
-    if not os.path.exists(log_dir):
-        os.makedirs(log_dir)
-        
+def get_logger(name):
     logger = logging.getLogger(name)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    file_handler = logging.FileHandler(f"{log_dir}/{log_file}")
-    file_handler.setFormatter(formatter)
+    logger.setLevel(logging.INFO)
     
-    logger.setLevel(level)
-    logger.addHandler(file_handler)
+    # Add logging handler if not already present
+    if not logger.hasHandlers():
+        handler = logging.FileHandler('../logs/eda_log.log')
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
     
     return logger
