@@ -1,9 +1,11 @@
 import unittest
 import pandas as pd
 import os
-os.chdir(r'c:\Users\habteyes.asfaw\10Accadamy\Rossmann-Sales-Prediction'
-)
-from src.eda_plots import sales_customers_correlation, assortment_type_sales, competitor_distance_effect, customer_behavior_opening_closing
+import sys
+
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), 'src')))
+
+from eda_plots import sales_customers_correlation, assortment_type_sales, competitor_distance_effect, customer_behavior_opening_closing
 
 class TestEDAFunctions(unittest.TestCase):
 
