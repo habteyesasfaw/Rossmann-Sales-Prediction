@@ -91,12 +91,27 @@ def plot_seasonal_behavior(df):
 # Function to calculate correlation between sales and customers
 def sales_customers_correlation(df):
     logger.info("Calculating correlation between sales and number of customers.")
+    
+    # Calculate the correlation between Sales and Customers
     correlation = df['Sales'].corr(df['Customers'])
     print(f"Correlation between Sales and Customers: {correlation}")
+    
+    # Scatterplot for Sales vs. Customers
     plt.figure(figsize=(10, 6))
     sns.scatterplot(x='Customers', y='Sales', data=df)
     plt.title('Sales vs. Number of Customers')
+    plt.grid(True)
     plt.show()
+    
+    # Generate a correlation matrix for relevant columns (Sales and Customers)
+    corr_matrix = df[['Sales', 'Customers']].corr()
+    
+    # Display the correlation matrix as a heatmap
+    plt.figure(figsize=(6, 4))
+    sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', linewidths=0.5, fmt='.2f')
+    plt.title('Correlation Heatmap: Sales and Customers')
+    plt.show()
+
 
 # Function to check effect of promotions on sales and customers
 def promo_effect_on_sales(df):
