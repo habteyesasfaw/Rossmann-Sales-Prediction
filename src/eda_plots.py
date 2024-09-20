@@ -21,20 +21,71 @@ def compare_promo_distribution(train_df, test_df):
     plt.show()
 
 # Function to compare sales behavior during holidays
-def sales_behavior_during_holidays(df):
-    logger.info("Analyzing sales behavior during holidays.")
-    plt.figure(figsize=(12, 8))
-    sns.boxplot(x='StateHoliday', y='Sales', data=df)
+def sales_behavior_during_holidays(train_data):
+    # Convert 'Date' column to datetime
+    train_data['Date'] = pd.to_datetime(train_data['Date'])
+    
+    # Create 'HolidayFlag' where StateHoliday is not 0
+    train_data['HolidayFlag'] = train_data['StateHoliday'].apply(lambda x: 1 if x != '0' else 0)
+    
+    # Shift dates to create 'BeforeHoliday' and 'AfterHoliday' flags
+    train_data['BeforeHoliday'] = train_data['HolidayFlag'].shift(1, fill_value=0)
+    train_data['AfterHoliday'] = train_data['HolidayFlag'].shift(-1, fill_value=0)
+    
+    # Define a function to categorize the period
+    def categorize_period(row):
+        if row['HolidayFlag'] == 1:
+            return 'During Holiday'
+        elif row['BeforeHoliday'] == 1:
+            return 'Before Holiday'
+        elif row['AfterHoliday'] == 1:
+            return 'After Holiday'
+        else:
+            return 'Non-Holiday'
+    
+    # Apply categorization to create a new column
+    train_data['HolidayPeriod'] = train_data.apply(categorize_period, axis=1)
+    
+    # Group by 'HolidayPeriod' and calculate average sales
+    holiday_sales = train_data.groupby('HolidayPeriod')['Sales'].mean()
+    
+    # Plot the sales trends
+    plt.figure(figsize=(10, 6))
+    holiday_sales.plot(kind='bar', color=['gray', 'blue', 'green', 'orange'])
     plt.title('Sales Before, During, and After Holidays')
+    plt.xlabel('Holiday Period')
+    plt.ylabel('Average Sales')
     plt.show()
 
+    # Log the completion of the plot
+    logger.info("Generating line plot for sales behavior before, during, and after holidays.")
+
+
+
 # Function to plot seasonal sales behavior
+
 def plot_seasonal_behavior(df):
     logger.info("Plotting seasonal purchase behavior.")
+    
+    # Ensure 'Date' is in datetime format
+    if not pd.api.types.is_datetime64_any_dtype(df['Date']):
+        df['Date'] = pd.to_datetime(df['Date'], errors='coerce')  # Convert to datetime
+
+    # Check for NaT values and drop if any
+    if df['Date'].isnull().any():
+        logger.warning("Some dates could not be converted and will be dropped.")
+        df = df.dropna(subset=['Date'])
+
+    # Extract month from the Date column
     df['Month'] = df['Date'].dt.month
+    
     plt.figure(figsize=(14, 8))
     sns.lineplot(x='Month', y='Sales', data=df, estimator='mean')
-    plt.title('Sales Trends Across Different Months')
+    plt.title('Sales Trends Across Different Months', fontsize=16)
+    plt.xlabel('Month', fontsize=14)
+    plt.ylabel('Average Sales', fontsize=14)
+    plt.xticks(range(1, 13))  # Set x-ticks for months
+    plt.grid(True)
     plt.show()
 
 # Function to calculate correlation between sales and customers
@@ -63,9 +114,24 @@ def promo_effect_on_sales(df):
 # Function to analyze promo effectiveness by store
 def promo_effectiveness_by_store(df):
     logger.info("Analyzing promo effectiveness by store.")
-    promo_sales = df.groupby('Store')['Sales'].mean().unstack()
-    sns.heatmap(promo_sales, cmap="YlGnBu", annot=True)
-    plt.title("Sales Effectiveness by Store During Promotions")
+    
+    promo_sales = df[df['Promo'] == 1].groupby('Store')['Sales'].mean().reset_index()
+    non_promo_sales = df[df['Promo'] == 0].groupby('Store')['Sales'].mean().reset_index()
+    
+    promo_sales.rename(columns={'Sales': 'Promo_Sales'}, inplace=True)
+    non_promo_sales.rename(columns={'Sales': 'Non_Promo_Sales'}, inplace=True)
+    
+    sales_comparison = pd.merge(promo_sales, non_promo_sales, on='Store')
+    sales_comparison['Promo_Effectiveness'] = sales_comparison['Promo_Sales'] - sales_comparison['Non_Promo_Sales']
+    
+    plt.figure(figsize=(14, 8))
+    sns.barplot(x='Store', y='Promo_Effectiveness', data=sales_comparison, palette='coolwarm', edgecolor='black')
+    plt.title('Promo Effectiveness by Store', fontsize=18)
+    plt.xlabel('Store', fontsize=14)
+    plt.ylabel('Sales Difference (Promo vs Non-Promo)', fontsize=14)
+    plt.xticks(rotation=90)
+
+    plt.tight_layout()
     plt.show()
 
 # Function to analyze customer behavior around store opening/closing times
