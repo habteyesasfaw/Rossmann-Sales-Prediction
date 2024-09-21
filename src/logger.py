@@ -15,7 +15,7 @@ def get_logger(name):
 
     if not logger.hasHandlers():
         # Create rotating file handler (5MB per file, max 3 files)
-        handler = RotatingFileHandler(os.path.join(log_dir, 'eda_log.log'), maxBytes=5*1024*1024, backupCount=3)
+        handler = RotatingFileHandler(os.path.join(log_dir, 'sales_log.log'), maxBytes=5*1024*1024, backupCount=3)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         handler.setFormatter(formatter)
         logger.addHandler(handler)
