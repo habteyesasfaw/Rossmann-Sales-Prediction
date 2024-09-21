@@ -1,5 +1,8 @@
+# src/logging_setup.py
+
 import logging
 import os
+from logging.handlers import RotatingFileHandler
 
 def get_logger(name):
     # Ensure the logs directory exists
@@ -10,16 +13,12 @@ def get_logger(name):
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
 
-    # Add logging handler if not already present
-    # if not logger.hasHandlers():
-    try:
-        handler = logging.FileHandler(os.path.join(log_dir, 'eda_log.log'))
+    if not logger.hasHandlers():
+        # Create rotating file handler (5MB per file, max 3 files)
+        handler = RotatingFileHandler(os.path.join(log_dir, 'eda_log.log'), maxBytes=5*1024*1024, backupCount=3)
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         handler.setFormatter(formatter)
         logger.addHandler(handler)
-        logger.info("Logger initialized and ready to record.")
-    except Exception as e:
-        print(f"Failed to create log file: {e}")
 
     return logger
 
