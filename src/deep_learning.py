@@ -7,7 +7,31 @@ from sklearn.preprocessing import MinMaxScaler
 from statsmodels.tsa.stattools import adfuller
 import matplotlib.pyplot as plt
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+from tensorflow.keras.utils import Sequence
 
+
+class DataGenerator(Sequence):
+    def __init__(self, data, target, time_steps, batch_size):
+        self.data = data
+        self.target = target
+        self.time_steps = time_steps
+        self.batch_size = batch_size
+
+    def __len__(self):
+        return int(np.floor(len(self.data) / self.batch_size))
+
+    def __getitem__(self, idx):
+        return self.__data_generation(idx)
+
+    def __data_generation(self, idx):
+        X, y = [], []
+        for i in range(self.batch_size):
+            start = idx * self.batch_size + i
+            if start + self.time_steps < len(self.data):
+                X.append(self.data[start:start + self.time_steps])
+                y.append(self.target[start + self.time_steps])
+        return np.array(X), np.array(y)
+    
 def check_stationarity(time_series):
     result = adfuller(time_series)
     return result[1] < 0.05
@@ -49,3 +73,6 @@ def save_model(model, folder_path="models/"):
     timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     model_filename = f"{folder_path}/lstm_model_{timestamp}.h5"
     model.save(model_filename)
+
+
+
