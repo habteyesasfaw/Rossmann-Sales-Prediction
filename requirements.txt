@@ -9,3 +9,6 @@ jupyterlab
 python-dateutil
 logging
 notebook
+tensorflow
+torch
+
