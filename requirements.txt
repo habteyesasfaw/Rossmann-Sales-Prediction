@@ -11,4 +11,8 @@ logging
 notebook
 tensorflow
 torch
+fastapi
+uvicorn
+joblib
+scikit-learn
 
