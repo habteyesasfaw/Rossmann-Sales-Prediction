@@ -25,6 +25,8 @@ reports/
 *.html
 *.png
 
+models/
+*.pkl
 
 
 # IDE and editor configurations
