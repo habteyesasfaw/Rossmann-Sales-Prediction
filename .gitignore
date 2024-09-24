@@ -22,8 +22,8 @@ reports/
 *.html
 *.png
 
-# Logs
-*.log
+models/
+*.pkl
 
 # IDE and editor configurations
 .vscode/
