@@ -15,6 +15,9 @@ venv/
 data/
 *.csv
 *.json
+#model
+models/
+*.pkl
 
 # Output files and directories
 reports/
@@ -24,6 +27,7 @@ reports/
 
 models/
 *.pkl
+
 
 # IDE and editor configurations
 .vscode/
