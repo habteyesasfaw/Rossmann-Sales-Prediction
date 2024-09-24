@@ -13,13 +13,11 @@ model = joblib.load(model_path)
 
 # Define the input data model
 class SalesPredictionInput(BaseModel):
-    store_id: int
-    promo: bool
-    day_of_week: int
-    customers: int
-    open: int
-    school_holiday: int
-    state_holiday: int
+    Store: int
+    DayOfWeek: int
+    Promo: bool
+    Open: int
+   
 
 # Define the prediction endpoint
 @app.post("/predict_sales")
@@ -32,7 +30,7 @@ async def predict_sales(input_data: SalesPredictionInput):
         prediction = model.predict(input_df)
         
         # Return prediction result
-        return {"predicted_sales": prediction.tolist()}
+        return {"predicted_sales": prediction.tolist()[0]}  # Return the first prediction
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
